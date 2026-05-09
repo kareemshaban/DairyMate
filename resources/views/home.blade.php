@@ -24,8 +24,8 @@
                 <!-- Content -->
 
                 <div class="container-xxl flex-grow-1 container-p-y">
-                    
-                    @if(auth() -> user() -> email == 'admin@bilal.com' || auth() -> user() -> email == 'admin@belal.com')
+
+                    @if(auth() -> user() -> email == 'admin@bilal.com' || auth() -> user() -> email == 'admin@belal.com' || true)
                     <div class="row">
                         <div class="col-lg-8 mb-4 order-0">
                             <div class="card">
@@ -310,8 +310,8 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        
+
+
 
                         <div class="col-md-6 col-lg-4 order-1 mb-4">
                             <div class="card h-100">
@@ -424,7 +424,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         @endif
 
                     </div>
