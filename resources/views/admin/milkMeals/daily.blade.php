@@ -146,7 +146,7 @@
                                             <th class="text-center" rowspan="3" hidden="hidden">#</th>
                                             <th class="text-center" rowspan="3" style="width:110px">{{__('main.supplier')}}</th>
                                             @foreach ($period as $date)
-                                                <th colspan="2" class="text-center">
+                                                <th colspan="4" class="text-center">
                                                             @if (Config::get('app.locale')=='ar' )
                                                                     {{ $date->translatedFormat('l') }}
                                                             @else
@@ -157,29 +157,29 @@
                                                 </th>
 
                                             @endforeach
-                                            <th class="text-center cell"  rowspan="2">{{__('main.total')}}</th>
-                                            <th class="text-center cell" colspan="1" rowspan="2">{{__('main.price')}}</th>
+                                            <th class="text-center cell"  rowspan="2" colspan="2">{{__('main.total')}}</th>
+                                            <th class="text-center cell" colspan="2" rowspan="2">{{__('main.price')}}</th>
                                             <th class="text-center cell" colspan="1" rowspan="3">{{__('main.total_cash')}}</th>
                                             <th class="text-center cell" rowspan="3">{{ __('main.actions') }}</th>
                                         </tr>
                                         <tr>
                                             @foreach ($period as $date)
-                                                <th class="text-center text-primary"  >{{ __('main.morning_meal') }}</th>
-                                                <th class="text-center text-success" >{{ __('main.evening_meal') }}</th>
+                                                <th class="text-center text-primary"  colspan="2">{{ __('main.morning_meal') }}</th>
+                                                <th class="text-center text-success" colspan="2">{{ __('main.evening_meal') }}</th>
                                             @endforeach
                                         </tr>
 
                                             <tr>
                                                 @foreach ($period as $date)
-                                                <th class="text-center cell text-primary">وزن اللبن</th>
-                                                <th class="text-center cell" hidden="hidden">{{__('main.buffalo_weight')}}</th>
-                                                <th class="text-center cell text-success">وزن اللبن</th>
-                                                <th class="text-center cell" hidden="hidden">{{__('main.buffalo_weight')}}</th>
+                                                <th class="text-center cell text-primary">{{__('main.bovine_weight')}}</th>
+                                                <th class="text-center cell" >{{__('main.buffalo_weight')}}</th>
+                                                <th class="text-center cell text-success">{{__('main.bovine_weight')}}</th>
+                                                <th class="text-center cell" >{{__('main.buffalo_weight')}}</th>
                                                 @endforeach
-                                                    <th class="text-center cell" >إجمالي الوزن</th>
-                                                    <th class="text-center cell" hidden="hidden">{{ __('main.total_buffalo_weight') }}</th>
-                                                    <th class="text-center cell" >سعر اللبن</th>
-                                                    <th class="text-center cell" hidden="hidden">{{ __('main.buffalo_milk_price') }}</th>
+                                                    <th class="text-center cell" >{{ __('main.total_bovine_weight') }}</th>
+                                                    <th class="text-center cell" >{{ __('main.total_buffalo_weight') }}</th>
+                                                    <th class="text-center cell" >{{ __('main.buffalo_milk_price') }}</th>
+                                                    <th class="text-center cell" >{{ __('main.buffalo_milk_price') }}</th>
 
                                             </tr>
                                             </thead>

@@ -575,6 +575,9 @@ class WeaklyMilkMealController extends Controller
                         'supplier_id' => $request->supplier,
                         'buffalo_weight' => $request->field == 1 ? $request->value : 0,
                         'bovine_weight' => $request->field == 0 ? $request->value : 0,
+                        'bont' => $request->bont ?? "",
+                        'water_ratio' => $request->water_ratio ?? 0,
+                        'density_ratio' => $request->density_ratio ?? 0,
                         'hasBonus' => 0,
                         'bonus' => 0,
                         'notes' => "",
@@ -735,7 +738,7 @@ class WeaklyMilkMealController extends Controller
                     $daily->update([
                         'weight_b' => $request->field == 1 ? $request->value : $daily->weight_b,
                         'weight' => $request->field == 0 ? $request->value : $daily->weight,
-                         'price' => $request->bovinePrice,
+                        'price' => $request->bovinePrice,
                         'price_b' => $request->buffaloPrice,
                         'total' => $total,
 
@@ -1297,48 +1300,48 @@ class WeaklyMilkMealController extends Controller
             'totalMoney'
         ));
     }
-    
-    
- public function getSuppliersBeforeBalance($wid, $startOfWeek, $endOfWeek)
-{
-    $clients = DB::table('clients')->select('id', 'name')->get();
 
-    $result = [];
 
-    foreach ($clients as $supplier) {
+    public function getSuppliersBeforeBalance($wid, $startOfWeek, $endOfWeek)
+    {
+        $clients = DB::table('clients')->select('id', 'name')->get();
 
-        $recipits = DB::table('recipits')
-            ->where('supplier_id', $supplier->id)
-            ->whereDate('date', '<=', $endOfWeek)
-            ->sum('amount');
+        $result = [];
 
-        $catchs = DB::table('catch_recipits')
-            ->where('client_id', $supplier->id)
-            ->whereDate('date', '<=', $endOfWeek)
-            ->sum('amount');
+        foreach ($clients as $supplier) {
 
-        $dailyMeals = DB::table('daily_milk_meals')
-            ->where('state', 1)
-            ->where('supplier_id', $supplier->id)
-            ->where('weakly_meal_id', '<>', $wid)
-            ->whereDate('created_at', '<=', $startOfWeek)
-            ->sum('total');
+            $recipits = DB::table('recipits')
+                ->where('supplier_id', $supplier->id)
+                ->whereDate('date', '<=', $endOfWeek)
+                ->sum('amount');
 
-        $sales = DB::table('sales')
-            ->where('client_id', $supplier->id)
-            ->whereDate('date', '<=', $endOfWeek)
-            ->sum('net');
+            $catchs = DB::table('catch_recipits')
+                ->where('client_id', $supplier->id)
+                ->whereDate('date', '<=', $endOfWeek)
+                ->sum('amount');
 
-        $beforeBalance = $dailyMeals + $catchs - $recipits - $sales;
+            $dailyMeals = DB::table('daily_milk_meals')
+                ->where('state', 1)
+                ->where('supplier_id', $supplier->id)
+                ->where('weakly_meal_id', '<>', $wid)
+                ->whereDate('created_at', '<=', $startOfWeek)
+                ->sum('total');
 
-        $suppliers[] = [
-            'supplier_name' => $supplier->name,
-            'before_balance' => $beforeBalance
-        ];
+            $sales = DB::table('sales')
+                ->where('client_id', $supplier->id)
+                ->whereDate('date', '<=', $endOfWeek)
+                ->sum('net');
+
+            $beforeBalance = $dailyMeals + $catchs - $recipits - $sales;
+
+            $suppliers[] = [
+                'supplier_name' => $supplier->name,
+                'before_balance' => $beforeBalance
+            ];
+        }
+
+        return view('admin.Client.before', compact('suppliers'));
     }
-
-     return view('admin.Client.before', compact('suppliers'));
-}
 
 
 }
