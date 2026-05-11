@@ -14,18 +14,21 @@
         flex-direction: column;
         justify-content: center;
         background: #f8f9fa;
-        box-shadow: 1px 1px 5px rgba(0,0,0,0.1);
+        box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
         cursor: pointer;
     }
+
     .week-title {
         font-weight: 600;
         font-size: 1.1rem;
     }
+
     .week-subtitle {
         font-size: 0.9rem;
         color: #555;
         margin-top: 0.3rem;
     }
+
     .week-state {
         width: fit-content;
         display: block;
@@ -33,21 +36,25 @@
         padding-left: 15px;
         padding-right: 15px;
     }
+
     .cell {
-        min-width: 90px  !important;
+        min-width: 90px !important;
         max-width: 90px !important;
         white-space: break-spaces;
     }
+
     input {
         width: 100% !important;
         max-width: 100% !important;
     }
-    td{
+
+    td {
         padding: 5px !important
     }
 
     .table-responsive {
-        max-height: 400px; /* or your desired height */
+        max-height: 400px;
+        /* or your desired height */
         overflow-y: auto;
         overflow-x: auto;
     }
@@ -61,128 +68,140 @@
 </style>
 
 <body>
-<!-- Layout wrapper -->
-<div class="layout-wrapper layout-content-navbar">
-    <div class="layout-container">
-        <!-- Menu -->
+    <!-- Layout wrapper -->
+    <div class="layout-wrapper layout-content-navbar">
+        <div class="layout-container">
+            <!-- Menu -->
 
-        @include('layouts.sidebar' , ['slag' => 3 , 'subSlag' => 31])
-        <!-- / Menu -->
+            @include('layouts.sidebar' , ['slag' => 3 , 'subSlag' => 31])
+            <!-- / Menu -->
 
-        <!-- Layout container -->
-        <div class="layout-page">
-            <!-- Navbar -->
+            <!-- Layout container -->
+            <div class="layout-page">
+                <!-- Navbar -->
 
-            @include('layouts.nav')
+                @include('layouts.nav')
 
-            <!-- / Navbar -->
+                <!-- / Navbar -->
 
-            <!-- Content wrapper -->
-            <div class="content-wrapper">
-                <!-- Content -->
+                <!-- Content wrapper -->
+                <div class="content-wrapper">
+                    <!-- Content -->
 
-                <div class="container-xxl flex-grow-1 container-p-y">
-                    <div style="display: flex ; justify-content: space-between ; align-items: center">
-                        <h4 class="fw-bold py-3 mb-4">
-                            <span class="text-muted fw-light">{{__('main.milk_department')}} /</span> {{__('main.weakly_meal')}}
-                        </h4>
-                      @if($meal)
-                        @if( $meal -> state == 0)
-{{--                            <button type="button" class="btn btn-primary"  id="postBtn" style="height: 45px"--}}
-{{--                                    data-id="{{ $meal->id  }}" >--}}
-{{--                                {{__('main.post_close_btn')}}  <span class="tf-icons bx bx-cloud-upload"></span>&nbsp;--}}
-{{--                            </button>--}}
-                        @else
+                    <div class="container-xxl flex-grow-1 container-p-y">
+                        <div style="display: flex ; justify-content: space-between ; align-items: center">
+                            <h4 class="fw-bold py-3 mb-4">
+                                <span class="text-muted fw-light">{{__('main.milk_department')}} /</span>
+                                {{__('main.weakly_meal')}}
+                            </h4>
+                            @if($meal)
+                            @if( $meal -> state == 0)
+
+                            @else
                             <h4 class="fw-bold py-3 mb-4 text-danger"> {{__('main.posted_meal')}} </h4>
 
                             @endif
-                        @endif
-                    </div>
+                            @else
+                            <button type="button" class="btn btn-primary" id="initBtn" style="height: 45px" >
+                                 بدأ وجبة جديدة
+                                 <span  class="tf-icons bx bx-cloud-upload"></span>&nbsp;
+                            </button>
+                            @endif
+                        </div>
 
 
 
-                    <!-- Responsive Table -->
-                    <div class="card">
-                        <h5 class="card-header">{{__('main.weakly_meal')}}
-                        (
-                            @if (Config::get('app.locale')=='en' )
+                        <!-- Responsive Table -->
+                        <div class="card">
+                            <h5 class="card-header">{{__('main.weakly_meal')}}
+                                (
+                                @if (Config::get('app.locale')=='en' )
                                 {{$dayName}}
-                            @else
+                                @else
                                 {{$dayName_ar}}
-                            @endif
-                            <span style="color: grey">  {{\Carbon\Carbon::parse($startOfWeek) -> format('Y-m-d') }}</span>
+                                @endif
+                                <span style="color: grey"> {{\Carbon\Carbon::parse($startOfWeek) -> format('Y-m-d')
+                                    }}</span>
 
-                            ---
-                            @if (Config::get('app.locale')=='en' )
+                                ---
+                                @if (Config::get('app.locale')=='en' )
                                 {{$end_dayName}}
-                            @else
+                                @else
                                 {{$end_dayName_ar}}
-                            @endif
-                            <span style="color: grey">  {{\Carbon\Carbon::parse($endOfWeek) -> format('Y-m-d') }}</span>
-                            )
-                        </h5>
-                        <input type="hidden" id="start" name="start" value="{{$startOfWeek}}">
-                        <input type="hidden" id="end" name="end" value="{{$endOfWeek}}">
-                        <input type="hidden" id="wid" name="wid" value="{{$meal ? $meal -> id : 0}}">
+                                @endif
+                                <span style="color: grey"> {{\Carbon\Carbon::parse($endOfWeek) -> format('Y-m-d')
+                                    }}</span>
+                                )
+                            </h5>
+                            <input type="hidden" id="start" name="start" value="{{$startOfWeek}}">
+                            <input type="hidden" id="end" name="end" value="{{$endOfWeek}}">
+                            <input type="hidden" id="wid" name="wid" value="{{$meal ? $meal -> id : 0}}">
 
-                        <input type="hidden" id="startDate" name="startDate" value="{{$startDate}}">
-                        @include('flash-message')
-                           <h2 style="font-size: 11px ; color: red ; margin-right: 10px ; margin-left: 10px">{{__('main.milk_meal_note')}}</h2>
+                            <input type="hidden" id="startDate" name="startDate" value="{{$startDate}}">
+                            @include('flash-message')
+                            <h2 style="font-size: 11px ; color: red ; margin-right: 10px ; margin-left: 10px">
+                                {{__('main.milk_meal_note')}}</h2>
 
-                            <div class="table-responsive  text-nowrap">
+                            <div class="table-responsive  text-nowrap" style="max-height: 90% !important">
 
                                 <table class="table table-striped table-hover  table-bordered view_table">
-                                        <thead>
+                                    <thead>
                                         @php
-                                            use Carbon\Carbon;
-                                            use Carbon\CarbonPeriod;
+                                        use Carbon\Carbon;
+                                        use Carbon\CarbonPeriod;
 
-                                            $start = Carbon::parse($startOfWeek);
-                                            $end = Carbon::parse($endOfWeek);
-                                            $period = CarbonPeriod::create($start, $end);
-                                            Carbon::setLocale('ar');
+                                        $start = Carbon::parse($startOfWeek);
+                                        $end = Carbon::parse($endOfWeek);
+                                        $period = CarbonPeriod::create($start, $end);
+                                        Carbon::setLocale('ar');
                                         @endphp
                                         <tr>
                                             <th class="text-center" rowspan="3" hidden="hidden">#</th>
-                                            <th class="text-center" rowspan="3" style="width:110px">{{__('main.supplier')}}</th>
+                                            <th class="text-center" rowspan="3" style="width:110px">
+                                                {{__('main.supplier')}}</th>
                                             @foreach ($period as $date)
-                                                <th colspan="4" class="text-center">
-                                                            @if (Config::get('app.locale')=='ar' )
-                                                                    {{ $date->translatedFormat('l') }}
-                                                            @else
-                                                                    {{ $date->format('l') }}
+                                            <th colspan="4" class="text-center">
+                                                @if (Config::get('app.locale')=='ar' )
+                                                {{ $date->translatedFormat('l') }}
+                                                @else
+                                                {{ $date->format('l') }}
 
-                                                            @endif
+                                                @endif
 
-                                                </th>
+                                            </th>
 
                                             @endforeach
-                                            <th class="text-center cell"  rowspan="2" colspan="2">{{__('main.total')}}</th>
-                                            <th class="text-center cell" colspan="2" rowspan="2">{{__('main.price')}}</th>
-                                            <th class="text-center cell" colspan="1" rowspan="3">{{__('main.total_cash')}}</th>
+                                            <th class="text-center cell" rowspan="2" colspan="2">{{__('main.total')}}
+                                            </th>
+                                            <th class="text-center cell" colspan="2" rowspan="2">{{__('main.price')}}
+                                            </th>
+                                            <th class="text-center cell" colspan="1" rowspan="3">
+                                                {{__('main.total_cash')}}</th>
                                             <th class="text-center cell" rowspan="3">{{ __('main.actions') }}</th>
                                         </tr>
                                         <tr>
                                             @foreach ($period as $date)
-                                                <th class="text-center text-primary"  colspan="2">{{ __('main.morning_meal') }}</th>
-                                                <th class="text-center text-success" colspan="2">{{ __('main.evening_meal') }}</th>
+                                            <th class="text-center text-primary" colspan="2">{{ __('main.morning_meal')
+                                                }}</th>
+                                            <th class="text-center text-success" colspan="2">{{ __('main.evening_meal')
+                                                }}</th>
                                             @endforeach
                                         </tr>
 
-                                            <tr>
-                                                @foreach ($period as $date)
-                                                <th class="text-center cell text-primary">{{__('main.bovine_weight')}}</th>
-                                                <th class="text-center cell" >{{__('main.buffalo_weight')}}</th>
-                                                <th class="text-center cell text-success">{{__('main.bovine_weight')}}</th>
-                                                <th class="text-center cell" >{{__('main.buffalo_weight')}}</th>
-                                                @endforeach
-                                                    <th class="text-center cell" >{{ __('main.total_bovine_weight') }}</th>
-                                                    <th class="text-center cell" >{{ __('main.total_buffalo_weight') }}</th>
-                                                    <th class="text-center cell" >{{ __('main.buffalo_milk_price') }}</th>
-                                                    <th class="text-center cell" >{{ __('main.buffalo_milk_price') }}</th>
+                                        <tr>
+                                            @foreach ($period as $date)
+                                            <th class="text-center cell text-primary">{{__('main.bovine_weight')}}</th>
+                                            <th class="text-center cell">{{__('main.buffalo_weight')}}</th>
+                                            <th class="text-center cell text-success">{{__('main.bovine_weight')}}</th>
+                                            <th class="text-center cell">{{__('main.buffalo_weight')}}</th>
+                                            @endforeach
+                                            <th class="text-center cell">{{ __('main.total_bovine_weight') }}</th>
+                                            <th class="text-center cell">{{ __('main.total_buffalo_weight') }}</th>
+                                            <th class="text-center cell">{{ __('main.buffalo_milk_price') }}</th>
+                                            <th class="text-center cell">{{ __('main.buffalo_milk_price') }}</th>
 
-                                            </tr>
-                                            </thead>
+                                        </tr>
+                                    </thead>
                                     <tbody>
 
 
@@ -201,30 +220,32 @@
 
 
 
+                        </div>
+                        <!--/ Responsive Table -->
                     </div>
-                    <!--/ Responsive Table -->
+                    <!-- / Content -->
+
+                    <!-- Footer -->
+                    @include('layouts.footer_design')
+                    <!-- / Footer -->
+
+                    <div class="content-backdrop fade"></div>
                 </div>
-                <!-- / Content -->
-
-                <!-- Footer -->
-                @include('layouts.footer_design')
-                <!-- / Footer -->
-
-                <div class="content-backdrop fade"></div>
+                <!-- Content wrapper -->
             </div>
-            <!-- Content wrapper -->
+            <!-- / Layout page -->
         </div>
-        <!-- / Layout page -->
+
+        <!-- Overlay -->
+        <div class="layout-overlay layout-menu-toggle"></div>
     </div>
 
-    <!-- Overlay -->
-    <div class="layout-overlay layout-menu-toggle"></div>
-</div>
+    @include('layouts.footer')
 
-@include('layouts.footer')
+    @include('admin.DailyMeals.create')
 
-<script>
-    $(document).ready(function() {
+    <script>
+        $(document).ready(function() {
         $('#postBtn').on('click', function(e) {
             e.preventDefault(); // prevent default behavior if it's a <button> or <a>
             const mealId = $(this).data('id');
@@ -242,8 +263,45 @@
                 }
             });
         });
+
+         $('#initBtn').on('click', function(e) {
+            console.log('clicked');
+
+            Swal.fire({
+                title: 'بداية وجبة أسبوعية جديدة',
+                text: 'هل انت متأكد من بدأ وجبة أسبوعية جديدة ؟',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'نعم , متأكد',
+                cancelButtonText: 'لا , تراجع'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Proceed with deletion or any other logic
+                    createNewWeaklyMeal();
+                }
+            });
+        });
     });
 
+
+    function createNewWeaklyMeal(){
+        const overlay = document.getElementById('closing-overlay');
+
+        // Show the overlay
+        overlay.style.display = 'flex';
+
+        // Create a timer that ensures the loading stays for at least 10 seconds
+        const minDuration = 2000; // 2 seconds
+        const startTime = Date.now();
+        let start = @json($startDate);
+        let end = @json($endOfWeek);
+
+        let url = "{{ route('weakly_meals-init', [':start' , ':end']) }}";
+        url = url.replace(':start', start);
+        url = url.replace(':end', end);
+        document.location.href=url;
+
+    }
     function postAndCloseWeakMeal(id){
         //mealCarryOver
         const overlay = document.getElementById('closing-overlay');
@@ -296,6 +354,7 @@
                 }, Math.max(remaining, 0));
             });
     }
-</script>
+    </script>
 </body>
+
 </html>

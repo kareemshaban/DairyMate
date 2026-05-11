@@ -100,6 +100,34 @@ class WeaklyMilkMealController extends Controller
         }
     }
 
+    public function init($start_date , $end_date){
+        $openMeals = WeaklyMilkMeal::where('state', '=', 0)->get();
+        if (count($openMeals) > 0) {
+              return back()->with('warning', __('main.can_not_open_new_weakly_meal'));
+        } else {
+                $code = $this -> getCode();
+
+                 WeaklyMilkMeal::create([
+                    'start_date' => Carbon::parse($start_date),
+                    'end_date' => Carbon::parse($end_date),
+                    'code' => $code,
+                    'state' => 0,
+                    'price_buffalo' =>  0,
+                    'price_bovine' =>  0,
+                    'total_buffalo_weight' => 0,
+                    'total_bovine_weight' =>  0,
+                    'total_money' =>  0,
+                    'number_of_daily_meals' =>  0,
+                    'notes' => "",
+                    'user_ins' => Auth::user()->id,
+                    'user_upd' => 0
+                ]);
+                return back()->with('success', __('main.saved'));
+        }
+
+
+    }
+
     /**
      * Display the specified resource.
      *
@@ -206,9 +234,9 @@ class WeaklyMilkMealController extends Controller
         }
         $prefix = 'WM';
         $padded = $prefix . str_pad($id, 4, '0', STR_PAD_LEFT); // Result: "0001"    }
-        echo json_encode($padded);
-        exit();
-
+       // echo json_encode($padded);
+       // exit();
+        return $padded ;
     }
 
     public function carryingOver(Request $request)

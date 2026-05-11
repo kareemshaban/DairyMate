@@ -116,6 +116,8 @@ Route::group(
         Route::get('/getWeaklyMeals/{month}/{year}/{day}', [App\Http\Controllers\WeaklyMilkMealController::class, 'getWeaklyMeals'])->name('getWeaklyMeals');
         Route::get('/getWeaklyMeal/{id}/{month}/{year}/{day}', [App\Http\Controllers\WeaklyMilkMealController::class, 'getWeaklyMeal'])->name('getWeaklyMeal');
         Route::get('/posted_milk_meals', [App\Http\Controllers\WeaklyMilkMealController::class, 'posted_milk_meals'])->name('posted_milk_meals');
+        Route::get('/weakly_meals-init/{start}/{end}', [App\Http\Controllers\WeaklyMilkMealController::class, 'init'])->name('weakly_meals-init');
+
 
 
         Route::post('/postMeal', [App\Http\Controllers\WeaklyMilkMealController::class, 'postMeal'])->name('postMeal');
@@ -142,6 +144,8 @@ Route::group(
         Route::get('/bouns-check/{type}/{date}', [App\Http\Controllers\DailyMilkMealController::class, 'bounsCheck'])->name('bouns-check');
         Route::get('/get_daily_meal_by_code/{id}', [App\Http\Controllers\DailyMilkMealController::class, 'getMealByCode'])->name('get_daily_meal_by_code');
         Route::get('/daily_meals_total_milk/{id}', [App\Http\Controllers\DailyMilkMealController::class, 'dailyMealTotalMilk'])->name('daily_meals_total_milk');
+        Route::get('/get_daily_meal_by_id/{id}', [App\Http\Controllers\DailyMilkMealController::class, 'getMealByID'])->name('get_daily_meal_by_id');
+
 
 
 

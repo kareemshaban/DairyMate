@@ -63,6 +63,7 @@ class DailyMilkMealController extends Controller
      */
     public function store(Request $request)
     {
+       // return $request ;
         if($request -> id == 0){
 
             $request->validate([
@@ -85,26 +86,38 @@ class DailyMilkMealController extends Controller
             );
             $wMeal = WeaklyMilkMeal::find($request -> weakly_meal_id);
             if($wMeal -> state == 0){
+                $total = ($request->buffalo_weight * $request->buffalo_price) +($request->bovine_weight * $request->bovine_price) ;
                $id = DailyMilkMeal::create([
-                    'code' => $request -> code,
-                    'weakly_meal_id' => $request -> weakly_meal_id,
-                    'type' => $request -> type,
-                    'date' => Carbon::parse($request -> date),
-                    'supplier_id' => $request -> supplier_id,
-                    'buffalo_weight' => $request -> buffalo_weight ,
-                    'bovine_weight' => $request -> bovine_weight,
-                    'hasBonus' => $request -> hasBonus ?? 0,
-                    'notes' => $request -> notes ?? "",
-                    'user_ins' => Auth::user() -> id,
-                    'user_upd' => 0
+                        'code' => $request -> code,
+                        'weakly_meal_id' => $request -> weakly_meal_id,
+                        'type' => $request->type,
+                        'date' => Carbon::parse($request->date),
+                        'supplier_id' => $request->supplier_id,
+                        'buffalo_weight' => $request->buffalo_weight ,
+                        'bovine_weight' => $request-> bovine_weight,
+                        'bont' => $request->bont ?? "",
+                        'water_ratio' => $request->water_ratio ?? 0,
+                        'density_ratio' => $request->density_ratio ?? 0,
+                        'hasBonus' => 0,
+                        'bonus' => 0,
+                        'notes' => "",
+                        'isManufactured' => 0,
+                        'car_meal_id' => 0,
+                        'buffalo_price' => $request->buffalo_price ?? 0,
+                        'bovine_price' => $request->bovine_price ?? 0,
+                        'isPaid' => 0,
+                        'state' => 0,
+                        'total' => $total,
+                        'user_ins' => Auth::user()->id
                 ]) -> id ;
                if($id > 0){
                    $this -> updateWeaklyMilkMealWeight($request -> buffalo_weight  , $request -> bovine_weight , $request -> weakly_meal_id);
 
                }
-                return redirect() -> route('daily_meals') -> with('success', __('main.saved'));
+                return back() -> with('success', __('main.saved'));
             }  else {
-                return redirect() -> route('daily_meals') -> with('warning', __('main.can_not_add_to_posted_meal'));
+                 return back() -> with('warning', __('main.can_not_add_to_posted_meal'));
+
             }
 
 
@@ -258,6 +271,7 @@ class DailyMilkMealController extends Controller
     public function getCode(Request $request , $id)
     {
         $meals = DailyMilkMeal::where('weakly_meal_id' , '=' , $id) -> get();
+        $weakMeal = WeaklyMilkMeal::find($id);
         $dId = 0;
         if (count($meals) > 0) {
             $dId = count($meals)  + 1;
@@ -268,7 +282,12 @@ class DailyMilkMealController extends Controller
         $padded = str_pad($dId, 4, '0', STR_PAD_LEFT); // Result: "0001"    }
         $code = $id . '-' . $padded;
         if ($request->ajax()) {
-            echo json_encode($code);
+
+        $response = [
+            'code' => $code ,
+            'meal' => $weakMeal
+        ];
+            echo json_encode($response);
             exit();
         } else {
             return $code ;
@@ -337,6 +356,27 @@ class DailyMilkMealController extends Controller
         join('weakly_milk_meals', 'daily_milk_meals.weakly_meal_id',
             '=', 'weakly_milk_meals.id') ->
         where('daily_milk_meals.code', '=', $code)
+            -> select('daily_milk_meals.*' , 'weakly_milk_meals.code as weak_meal')
+            -> get() -> first();
+
+
+        $wMeal = WeaklyMilkMeal::find( $meal -> weakly_meal_id) ;
+        $meal -> buffalo_price = $wMeal -> price_buffalo ;
+        $meal -> bovine_price = $wMeal -> price_bovine ;
+        $meal -> state = $wMeal -> state ;
+        echo json_encode($meal);
+        exit();
+    }
+
+
+    public function getMealByID($id)
+    {
+
+
+        $meal = DB::table('daily_milk_meals') ->
+        join('weakly_milk_meals', 'daily_milk_meals.weakly_meal_id',
+            '=', 'weakly_milk_meals.id') ->
+        where('daily_milk_meals.id', '=', $id)
             -> select('daily_milk_meals.*' , 'weakly_milk_meals.code as weak_meal')
             -> get() -> first();
 

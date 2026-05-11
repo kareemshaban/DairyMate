@@ -625,7 +625,10 @@ return [
     'print_btn' => 'طباعة',
     'stock_report_by_meal' => 'تقرير المخزون حسب الوجبة',
     'meal' => 'الوجبة',
-    'message_code' => 'كود الرسالة'
+    'message_code' => 'كود الرسالة',
+    'bont' => 'بونط',
+    'water_ratio' => 'نسبة المياة',
+    'density_ratio' => 'نسبة الكثافة'
 
 
 

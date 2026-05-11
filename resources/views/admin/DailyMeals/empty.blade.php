@@ -159,26 +159,24 @@
     <td class="text-center inp">
         <input type="number" step="any" name="mbovine_weight[]" data-type="0" data-field="0"
             data-car="{{$supplier -> car_id}}" class="form-control" style="color: #6610f2" data-date="{{ $date }}"
-            data-supplier="{{ $supplier->id }}" @if(optional($meal)->state === 1) disabled @endif />
+            data-supplier="{{ $supplier->id }}" @if(optional($meal)->state === 1) disabled @endif  readonly   data-meal-id="0"/>
     </td>
     <td class="text-center inp">
         <input type="number" step="any" name="mbuffalo_weight[]" data-type="0" data-field="1"
             data-car="{{$supplier -> car_id}}" class="form-control" style="color: #6610f2" data-date="{{ $date }}"
-            data-supplier="{{ $supplier->id }}" @if(optional($meal)->state === 1) disabled @endif />
+            data-supplier="{{ $supplier->id }}" @if(optional($meal)->state === 1) disabled @endif readonly data-meal-id="0"/>
     </td>
 
 
     <td class="text-center inp">
         <input type="number" step="any" name="ebovine_weight[]" data-type="1" data-field="0"
             data-car="{{$supplier -> car_id}}" class="form-control" data-date="{{ $date }}"
-            data-supplier="{{ $supplier -> id }}" @if(optional($meal)->state === 1) disabled @endif style="color:
-        #71dd37"/>
+            data-supplier="{{ $supplier -> id }}" @if(optional($meal)->state === 1) disabled @endif style="color:#71dd37" readonly data-meal-id="0"/>
     </td>
     <td class="text-center inp">
         <input type="number" step="any" name="ebuffalo_weight[]" data-type="1" data-field="1"
             data-car="{{$supplier -> car_id}}" class="form-control" data-date="{{ $date }}"
-            data-supplier="{{ $supplier -> id }}" @if(optional($meal)->state === 1) disabled @endif style="color:
-        #71dd37"/>
+            data-supplier="{{ $supplier -> id }}" @if(optional($meal)->state === 1) disabled @endif style="color: #71dd37" readonly data-meal-id="0"/>
     </td>
 
     @endforeach
@@ -186,14 +184,14 @@
     <td class="text-center col-action">
         <input type="text" step="any" name="total_bovine_weight[]" data-car="{{$supplier -> car_id}}"
             class="form-control" data-date="{{ $date }}" data-supplier="{{ $supplier -> id }}" readonly
-            @if(optional($meal)->state === 1) disabled @endif/>
+            @if(optional($meal)->state === 1) disabled @endif readonly data-meal-id="0"/>
 
 
     </td>
     <td class="text-center col-action">
         <input type="text" step="any" name="total_buffalo_weight[]" data-car="{{$supplier -> car_id}}"
             class="form-control" data-date="{{ $date }}" data-supplier="{{ $supplier -> id }}" readonly
-            @if(optional($meal)->state === 1) disabled @endif/>
+            @if(optional($meal)->state === 1) disabled @endif readonly data-meal-id="0"/>
     </td>
 
     <td class="text-center inp">
@@ -202,7 +200,7 @@
             data-supplier="{{ $supplier -> id }}" value="{{$supplier -> bovine_price}}"
             data-buffalo-price="{{$supplier -> buffalo_price}}" @if($supplier -> car_id > 0)
         readonly @endif
-        @if(optional($meal)->state === 1) disabled @endif/>
+        @if(optional($meal)->state === 1) disabled @endif readonly data-meal-id="0"/>
 
 
     </td>
@@ -210,15 +208,15 @@
         <input type="number" step="any" name="buffalo_price[]" data-field="2" data-type="3"
             data-car="{{$supplier -> car_id}}" class="form-control" data-date="{{ $date }}"
             data-supplier="{{ $supplier -> id }}" value="{{$supplier -> buffalo_price}}" @if($supplier -> car_id > 0)
-        readonly @endif
-        @if(optional($meal)->state === 1) disabled @endif/>
+        readonly @endif data-meal-id="0"
+        @if(optional($meal)->state === 1) disabled @endif readonly/>
     </td>
 
 
     <td class="text-center col-action">
         <input type="text" step="any" name="total_money[]" data-car="{{$supplier -> car_id}}" class="form-control"
             data-date="{{ $date }}" data-supplier="{{ $supplier -> id }}" readonly @if(optional($meal)->state === 1)
-        disabled @endif/>
+        disabled @endif readonly data-meal-id="0"/>
     </td>
     <td class="text-center">
         @if($supplier -> car_id == 0)
@@ -252,7 +250,7 @@
     </td>
 
     {{-- total mbuffalo --}}
-    <td class="text-center" hidden>
+    <td class="text-center">
         <input type="text" class="form-control total-mbuffalo" data-date="{{ $date }}" readonly>
     </td>
 
@@ -262,7 +260,7 @@
     </td>
 
     {{-- total ebuffalo --}}
-    <td class="text-center" hidden>
+    <td class="text-center">
         <input type="text" class="form-control total-ebuffalo" data-date="{{ $date }}" readonly>
     </td>
     @endforeach
@@ -274,7 +272,7 @@
     </td>
 
     {{-- Total buffalo weight --}}
-    <td class="text-center" hidden>
+    <td class="text-center">
         <input type="text" class="form-control total-buffalo-weight" readonly>
     </td>
 
@@ -285,11 +283,11 @@
 
     </td>
 
-    <td class="text-center">
+
+
+    <td class="text-center" colspan="2">
         <input type="text" class="form-control total-money" readonly>
     </td>
-
-    <td></td>
 </tr>
 
 
@@ -668,93 +666,196 @@ function handleSave(input) {
 
     // ========== دالة loadMilkMealData ==========
     function loadMilkMealData(weaklyMealId) {
-        fetch(`/weakMeals/${weaklyMealId}`)
-            .then(response => response.json())
-            .then(data => {
-                var meals = data.meals;
-                var prices = data.prices;
-                var totals = data.totals;
-                console.log(meals);
+      const overlay = document.getElementById('loading-overlay');
 
-                meals.forEach(record => {
-                    const date = record.date;
-                    const type = record.type;
-                    const supplierId = record.supplier_id;
-                    const state = record.state;
-                    const car_id = record.car_id;
+// Show loading
+overlay.style.display = 'flex';
 
-                    // إضافة سطر الجاموسي تلقائياً إذا كان هناك وزن جاموسي
-                    if (parseFloat(record.buffalo_weight) > 0) {
-                     //   injectBuffaloRow(supplierId);
-                    }
+const minDuration = 2000;
+const startTime = Date.now();
 
-                    // تعبئة حقل البقري
-                    const bovineSelector = `input[data-date="${date}"][data-type="${type}"][data-field="0"][data-supplier="${supplierId}"]`;
-                    const bovineInput = document.querySelector(bovineSelector);
-                    if (bovineInput) {
-                        const val = formatNumberSmart(record.bovine_weight);
-                        bovineInput.value = val;
-                        bovineInput.dataset.lastValue = val;
+fetch(`/weakMeals/${weaklyMealId}`)
+    .then(response => {
 
-                        if (record.isManufactured == 1) {
-                            bovineInput.readOnly = true;
-                        } else {
-                            bovineInput.readOnly = false;
-                        }
-                    }
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
 
-                    // تعبئة حقل الجاموسي
-                    const buffaloSelector = `input[data-date="${date}"][data-type="${type}"][data-field="1"][data-supplier="${supplierId}"]`;
-                    const buffaloInput = document.querySelector(buffaloSelector);
-                    if (buffaloInput) {
-                        const val = formatNumberSmart(record.buffalo_weight);
-                        buffaloInput.value = val;
-                        buffaloInput.dataset.lastValue = val;
-                    }
+        return response.json();
+    })
+    .then(data => {
 
-                    // تعبئة سعر البقري
-                    const bovinePriceSelector = `input[data-type="3"][data-field="2"][data-supplier="${supplierId}"][name="bovine_price[]"]`;
-                    const bovinePriceInp = document.querySelector(bovinePriceSelector);
-                    if (bovinePriceInp) {
-                        let priceVal = (car_id == 0) ? formatNumberSmart(record.bovine_price) : formatNumberSmart(prices[supplierId]);
-                        bovinePriceInp.value = priceVal;
-                        bovinePriceInp.dataset.lastValue = priceVal;
-                    }
+        var meals = data.meals;
+        var prices = data.prices;
+        var totals = data.totals;
 
-                    // تعبئة سعر الجاموسي
-                    const buffaloPriceSelector = `input[data-type="3"][data-field="3"][data-supplier="${supplierId}"][name="buffalo_price[]"]`;
-                    const buffaloPriceInp = document.querySelector(buffaloPriceSelector);
-                    if (buffaloPriceInp && car_id == 0) {
-                        buffaloPriceInp.value = formatNumberSmart(record.buffalo_price);
-                        buffaloPriceInp.dataset.lastValue = formatNumberSmart(record.buffalo_price);
-                    }
+        console.log(meals);
 
-                    // تعبئة إجمالي المبلغ
-                    const moneyTotalInputSelector = `input[data-supplier="${supplierId}"][name="total_money[]"]`;
-                    const moneyTotalInput = document.querySelector(moneyTotalInputSelector);
-                    if (moneyTotalInput && car_id != 0) {
-                        moneyTotalInput.value = formatNumberSmart(totals[supplierId]);
-                        moneyTotalInput.dataset.lastValue = formatNumberSmart(totals[supplierId]);
-                    }
+        meals.forEach(record => {
 
-                    // تعطيل الحقول إذا كان الحالة = 1
-                    const supplierInputs = document.querySelectorAll(`input[data-supplier="${supplierId}"]`);
-                    supplierInputs.forEach(input => {
-                        input.disabled = (state === 1);
-                    });
+            const date = record.date;
+            const type = record.type;
+            const supplierId = record.supplier_id;
+            const state = record.state;
+            const car_id = record.car_id;
 
-                    const postBtn = document.querySelector(`.postBtn[data-supplier="${supplierId}"]`);
-                    if (postBtn) {
-                        postBtn.style.display = (state === 1) ? 'none' : '';
-                    }
-                });
+            // إضافة سطر الجاموسي تلقائياً إذا كان هناك وزن جاموسي
+            if (parseFloat(record.buffalo_weight) > 0) {
+                // injectBuffaloRow(supplierId);
+            }
 
-                bindInputEvents();
+            // تعبئة حقل البقري
+            const bovineSelector =
+                `input[data-date="${date}"][data-type="${type}"][data-field="0"][data-supplier="${supplierId}"]`;
 
-                calculateRowTotals();
-                calculateTotals();
-            })
-            .catch(err => console.error('Error loading milk meal data:', err));
+            const bovineInput = document.querySelector(bovineSelector);
+
+            if (bovineInput) {
+
+                bovineInput.setAttribute('data-meal-id', record.id);
+
+                const val = formatNumberSmart(record.bovine_weight);
+
+                bovineInput.value = val;
+                bovineInput.dataset.lastValue = val;
+
+                if (record.isManufactured == 1) {
+
+                    bovineInput.style.backgroundColor = "#e5e7eb";
+                    bovineInput.style.cursor = "not-allowed";
+
+                } else {
+
+                    bovineInput.style.backgroundColor = "";
+                    bovineInput.style.cursor = "";
+
+                }
+            }
+
+            // تعبئة حقل الجاموسي
+            const buffaloSelector =
+                `input[data-date="${date}"][data-type="${type}"][data-field="1"][data-supplier="${supplierId}"]`;
+
+            const buffaloInput = document.querySelector(buffaloSelector);
+
+            if (buffaloInput) {
+
+                buffaloInput.setAttribute('data-meal-id', record.id);
+
+                const val = formatNumberSmart(record.buffalo_weight);
+
+                buffaloInput.value = val;
+                buffaloInput.dataset.lastValue = val;
+
+                if (record.isManufactured == 1) {
+
+                    buffaloInput.style.backgroundColor = "#e5e7eb";
+                    buffaloInput.style.cursor = "not-allowed";
+
+                } else {
+
+                    buffaloInput.style.backgroundColor = "";
+                    buffaloInput.style.cursor = "";
+
+                }
+            }
+
+            // تعبئة سعر البقري
+            const bovinePriceSelector =
+                `input[data-type="3"][data-field="2"][data-supplier="${supplierId}"][name="bovine_price[]"]`;
+
+            const bovinePriceInp = document.querySelector(bovinePriceSelector);
+
+            if (bovinePriceInp) {
+
+                bovinePriceInp.setAttribute('data-meal-id', record.id);
+
+                let priceVal = (car_id == 0)
+                    ? formatNumberSmart(record.bovine_price)
+                    : formatNumberSmart(prices[supplierId]);
+
+                bovinePriceInp.value = priceVal;
+                bovinePriceInp.dataset.lastValue = priceVal;
+            }
+
+            // تعبئة سعر الجاموسي
+            const buffaloPriceSelector =
+                `input[data-type="3"][data-field="3"][data-supplier="${supplierId}"][name="buffalo_price[]"]`;
+
+            const buffaloPriceInp = document.querySelector(buffaloPriceSelector);
+
+            if (buffaloPriceInp && car_id == 0) {
+
+                buffaloPriceInp.setAttribute('data-meal-id', record.id);
+
+                const buffaloPriceVal = formatNumberSmart(record.buffalo_price);
+
+                buffaloPriceInp.value = buffaloPriceVal;
+                buffaloPriceInp.dataset.lastValue = buffaloPriceVal;
+            }
+
+            // تعبئة إجمالي المبلغ
+            const moneyTotalInputSelector =
+                `input[data-supplier="${supplierId}"][name="total_money[]"]`;
+
+            const moneyTotalInput = document.querySelector(moneyTotalInputSelector);
+
+            if (moneyTotalInput && car_id != 0) {
+
+                const totalVal = formatNumberSmart(totals[supplierId]);
+
+                moneyTotalInput.value = totalVal;
+                moneyTotalInput.dataset.lastValue = totalVal;
+            }
+
+            // تعطيل الحقول إذا كان الحالة = 1
+            const supplierInputs = document.querySelectorAll(
+                `input[data-supplier="${supplierId}"]`
+            );
+
+            supplierInputs.forEach(input => {
+                input.disabled = (state === 1);
+            });
+
+            // إخفاء زر الترحيل
+            const postBtn = document.querySelector(
+                `.postBtn[data-supplier="${supplierId}"]`
+            );
+
+            if (postBtn) {
+                postBtn.style.display = (state === 1) ? 'none' : '';
+            }
+
+        });
+
+        bindInputEvents();
+
+        calculateRowTotals();
+        calculateTotals();
+
+    })
+    .catch(err => {
+
+        console.error('Error loading milk meal data:', err);
+
+        Swal.fire({
+            icon: 'error',
+            title: 'خطأ',
+            text: 'حدث خطأ أثناء تحميل بيانات الوجبة'
+        });
+
+    })
+    .finally(() => {
+
+        // ضمان ظهور الـ loader لمدة minimum
+        const elapsed = Date.now() - startTime;
+        const remaining = Math.max(0, minDuration - elapsed);
+
+        setTimeout(() => {
+            overlay.style.display = 'none';
+        }, remaining);
+
+    });
     }
 
     // ========== دالة injectBuffaloRow لإضافة سطر جاموسي تلقائياً ==========
@@ -959,8 +1060,10 @@ function handleSave(input) {
         });
 
         for (let date in dateTotals) {
-            $('.total-mbovine[data-date="'+date+'"]').val(formatNumberSmart(dateTotals[date].mbovine + dateTotals[date].mbuffalo));
-            $('.total-ebovine[data-date="'+date+'"]').val(formatNumberSmart(dateTotals[date].ebovine + dateTotals[date].ebuffalo));
+            $('.total-mbovine[data-date="'+date+'"]').val(formatNumberSmart(dateTotals[date].mbovine ));
+            $('.total-ebovine[data-date="'+date+'"]').val(formatNumberSmart(dateTotals[date].ebovine ));
+            $('.total-mbuffalo[data-date="'+date+'"]').val(formatNumberSmart( dateTotals[date].mbuffalo));
+            $('.total-ebuffalo[data-date="'+date+'"]').val(formatNumberSmart( dateTotals[date].ebuffalo));
         }
 
         $('input[name="total_bovine_weight[]"]').each(function(){
@@ -973,7 +1076,8 @@ function handleSave(input) {
             grandMoney += parseFloat(this.value) || 0;
         });
 
-        $('.total-bovine-weight').val(formatNumberSmart(grandBovine + grandBuffalo));
+        $('.total-bovine-weight').val(formatNumberSmart(grandBovine));
+        $('.total-buffalo-weight').val(formatNumberSmart(grandBuffalo));
         $('.total-money').val(formatNumberSmart(grandMoney));
     }
 
@@ -989,4 +1093,198 @@ function handleSave(input) {
         calculateTotals();
         calculateRowTotals();
     });
+
+
+    // ========== Double Click Listener على حقول الأوزان فقط ==========
+$(document).on('dblclick', 'input[name="mbovine_weight[]"], input[name="mbuffalo_weight[]"], input[name="ebovine_weight[]"], input[name="ebuffalo_weight[]"]', function(e) {
+    // منع التكرار إذا كان الحقل معطلاً
+    if (this.disabled) return;
+
+    // جلب الداتا من الـ attributes
+    const mDataSet = {
+        value: this.value,
+        name: this.name,
+        date: this.dataset.date,
+        supplier: this.dataset.supplier,
+        type: this.dataset.type,
+        field: this.dataset.field,
+        car: this.dataset.car
+    };
+
+
+         let code = this.dataset.mealId;
+         if(code == 0){
+            let wMID = $('#wid').val() ;
+
+            $.ajax({
+            type:'get',
+            url:'/daily_meals-code' + '/' + wMID,
+            dataType: 'json',
+
+            success:function(response){
+
+
+
+                var date = new Date(mDataSet.date);
+                var day = date.getDate(),
+                    month = date.getMonth() + 1,
+                    year = date.getFullYear(),
+                    hour = date.getHours() ,
+                    mins = date.getMinutes();
+                month = (month < 10 ? "0" : "") + month;
+                day = (day < 10 ? "0" : "") + day;
+                hour = (hour < 10 ? "0" : "") + hour ;
+                mins = (mins < 10 ? "0" : "") + mins ;
+                var start_date = year + "-" + month + "-" + day + " " + hour + ":" + mins ;
+
+                 let fCode = "" ;
+                    if(mDataSet.type == 0){
+                        fCode = 'DMM' + response.code ;
+                    } else {
+                        fCode = 'DME' + response.code ;
+                    }
+
+                if(response){
+                     if(response.meal){
+                    let href = $(this).attr('data-attr');
+                     event.preventDefault();
+
+                    $.ajax({
+                        url: href,
+                        beforeSend: function() {
+                            $('#loader').show();
+                        },
+                        // return the result
+                        success: function(result) {
+                            $('#createModal').modal("show");
+                            $(".modal-body #code").val( fCode );
+                            $(".modal-body #date").val(start_date );
+                            $(".modal-body #weakly_meal_id").val( wMID );
+                            $(".modal-body #weakly_meal_id_hidden").val( wMID );
+                            $(".modal-body #weak_meal").val(response.meal.code);
+                            $(".modal-body #type").val(mDataSet.type);
+                            $(".modal-body #supplier_id").val(mDataSet.supplier);
+                            $(".modal-body #buffalo_weight").val(0);
+                            $(".modal-body #bovine_weight").val(0);
+                            $(".modal-body #hasBonus").val("" );
+                            $(".modal-body #notes").val("");
+                            $(".modal-body #bonus").val("");
+                            $(".modal-body #total").val("");
+                            $(".modal-body #buffalo_price").val(0);
+                            $(".modal-body #bovine_price").val(0);
+                            $(".modal-body #weak_meal").show();
+                            $(".modal-body #weakly_meal_id").hide();
+
+                            $(".modal-body #id").val(response.id);
+
+                            var translatedText = "{{ __('main.viewData') }}";
+                            $(".modelTitle").html(translatedText);
+
+
+
+                        },
+                        complete: function() {
+                            $('#loader').hide();
+                        },
+                        error: function(jqXHR, testStatus, error) {
+                            console.log(error);
+                            alert("Page " + href + " cannot open. Error:" + error);
+                            $('#loader').hide();
+                        },
+                        timeout: 8000
+                    });
+                } else {
+                    toastr.error('عفوا لا يوجد وجبة أسبوعية مفتوحة حاليا');
+
+                }
+            } else {
+
+            }
+            }
+        });
+
+         } else {
+        $.ajax({
+            type:'get',
+            url:'/get_daily_meal_by_id' + '/' + code,
+            dataType: 'json',
+
+            success:function(response){
+
+                var date = new Date(response.date);
+                var day = date.getDate(),
+                    month = date.getMonth() + 1,
+                    year = date.getFullYear(),
+                    hour = date.getHours() ,
+                    mins = date.getMinutes();
+                    month = (month < 10 ? "0" : "") + month;
+                    day = (day < 10 ? "0" : "") + day;
+                    hour = (hour < 10 ? "0" : "") + hour ;
+                    mins = (mins < 10 ? "0" : "") + mins ;
+                    var start_date = year + "-" + month + "-" + day + " " + hour + ":" + mins ;
+
+                if(response){
+                    let href = $(this).attr('data-attr');
+                     event.preventDefault();
+
+
+
+                    $.ajax({
+                        url: href,
+                        beforeSend: function() {
+                            $('#loader').show();
+                        },
+                        // return the result
+
+                        success: function(result) {
+                            $('#createModal').modal("show");
+                            $(".modal-body #code").val( response.code );
+                            $(".modal-body #date").val(start_date );
+                            $(".modal-body #weakly_meal_id").val( response.weakly_meal_id );
+                            $(".modal-body #weakly_meal_id_hidden").val( response.weakly_meal_id );
+                            $(".modal-body #weak_meal").val( response.weak_meal );
+                            $(".modal-body #type").val( response.type );
+                            $(".modal-body #supplier_id").val( response.supplier_id );
+                            $(".modal-body #buffalo_weight").val( response.buffalo_weight );
+                            $(".modal-body #bovine_weight").val( response.bovine_weight );
+                            $(".modal-body #hasBonus").val( response.hasBonus );
+                            $(".modal-body #notes").val( response.notes );
+                            $(".modal-body #bonus").val(response.bonus);
+                            $(".modal-body #total").val(response.total);
+                            $(".modal-body #buffalo_price").val(response.buffalo_price);
+                            $(".modal-body #bovine_price").val(response.bovine_price);
+                            $(".modal-body #weak_meal").show();
+                            $(".modal-body #weakly_meal_id").hide();
+
+                            $(".modal-body #id").val(response.id);
+
+                            var translatedText = "{{ __('main.viewData') }}";
+                            $(".modelTitle").html(translatedText);
+
+
+
+                        },
+                        complete: function() {
+                            $('#loader').hide();
+                        },
+                        error: function(jqXHR, testStatus, error) {
+                            console.log(error);
+                            alert("Page " + href + " cannot open. Error:" + error);
+                            $('#loader').hide();
+                        },
+                        timeout: 8000
+                    });
+                } else {
+
+                }
+            }
+        });
+
+    }
+
+
+
+
+
+});
 </script>

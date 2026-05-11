@@ -328,12 +328,12 @@
     }
 
     function getMeals(month, year, day, id) {
-        // const overlay = document.getElementById('loading-overlay');
-        //
-        // // Show loading
-        // overlay.style.display = 'flex';
-        // const minDuration = 2000;
-        // const startTime = Date.now();
+        const overlay = document.getElementById('loading-overlay');
+
+        // Show loading
+        overlay.style.display = 'flex';
+        const minDuration = 2000;
+        const startTime = Date.now();
 
         $.ajax({
             type: 'GET',
@@ -375,12 +375,12 @@
             },
 
             complete: function () {
-                // const elapsed = Date.now() - startTime;
-                // const remaining = minDuration - elapsed;
-                //
-                // setTimeout(() => {
-                //     overlay.style.display = 'none';
-                // }, Math.max(remaining, 0));
+                const elapsed = Date.now() - startTime;
+                const remaining = minDuration - elapsed;
+
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, Math.max(remaining, 0));
             }
         });
     }

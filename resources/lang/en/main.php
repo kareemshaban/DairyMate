@@ -596,6 +596,9 @@ Regarding the Meals Table, make sure to click the Save button in the row you edi
     'print_btn' => 'Print',
     'stock_report_by_meal' => 'Stock Report by Meal',
     'meal' => 'Meal',
-    'message_code' => ' Message Code'
+    'message_code' => ' Message Code',
+    'bont' => 'Bont',
+    'water_ratio' => 'Water Ratio',
+    'density_ratio' => 'Density Ratio'
 
 ];

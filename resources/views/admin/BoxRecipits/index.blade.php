@@ -137,7 +137,6 @@
 <script type="text/javascript">
     var id = 0 ;
     $(document).on('click', '#createButton', function (event) {
-        console.log('clicked');
         id = 0;
         event.preventDefault();
         let href = $(this).attr('data-attr');
